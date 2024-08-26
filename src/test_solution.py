@@ -1,5 +1,7 @@
 import pytest, os, sys, tempfile, mock, json
 from flask import Flask
+from app import app 
+
 
 @pytest.fixture
 def client():
@@ -111,3 +113,34 @@ def test_get_members_returns_list_of_four(client):
     response = client.get('/members')
     members = json.loads(response.data)
     assert len(members) == 4
+
+@pytest.mark.it("Method GET /member/3443 should return Tommy")
+def test_get_first_member_tommy(client):
+    response = client.get('/member/3443')
+    data = json.loads(response.data)
+    assert data is not None
+    assert data["first_name"] == "Tommy"
+
+
+@pytest.mark.it("Method GET /member/3443 should return Tommy")
+def test_get_first_member_tommy(client):
+    response = client.get('/member/3443')
+    data = json.loads(response.data)
+    assert data is not None
+    assert data["first_name"] == "Tommy"
+
+@pytest.mark.it("After deleting the member 3443 we called GET /members and it should return a list with 4 members")
+def test_get_members_returns_list_of_four(client):
+    response = client.delete('/member/3443')
+    assert response.status_code == 200
+    response = client.get('/members')
+    members = json.loads(response.data)
+    assert len(members) == 4
+
+@pytest.fixture
+def client():
+    app.config['TESTING'] = True
+    with app.test_client() as client:
+        yield client
+
+# Aquí van tus pruebas
